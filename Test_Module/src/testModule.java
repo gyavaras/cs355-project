@@ -18,14 +18,19 @@ public class testModule {
             //define the writer and reader
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
             //check to see if a client is connected
             if(socket.isConnected()) {
                 System.out.println("Client is connected");
                 out.write("Connected to server");
+
+                out.flush();
             } else {
                 System.out.println("Client not found");
             }
+            in.close();
+            out.close();
+            socket.close();
+
 
 
         } catch (IOException e) {
