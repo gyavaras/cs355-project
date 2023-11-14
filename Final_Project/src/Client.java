@@ -4,21 +4,22 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.Arrays;
 
 public class Client implements Runnable {
     private static final String ENCRYPTION_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String HASH_ALGORITHM = "HmacSHA256";
-    private static final int IV_SIZE = 16; // AES block size
+    private static final int IV_SIZE = 16;
     private static final SecureRandom secureRandom = new SecureRandom();
 
     private final Server server;
+    private final String clientId;
     private final String codeSegment;
     private final byte[] encryptionKey;
     private final byte[] macKey;
 
-    public Client(Server server, String codeSegment, byte[] encryptionKey, byte[] macKey) {
+    public Client(Server server, String clientId, String codeSegment, byte[] encryptionKey, byte[] macKey) {
         this.server = server;
+        this.clientId = clientId;
         this.codeSegment = codeSegment;
         this.encryptionKey = encryptionKey;
         this.macKey = macKey;
@@ -32,6 +33,10 @@ public class Client implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 
     private EncryptedData prepareDataForServer() throws Exception {
@@ -68,7 +73,6 @@ public class Client implements Runnable {
         return hmac.doFinal(data);
     }
 
-    // Inner class for encapsulating encrypted data
     public static class EncryptedData {
         private final byte[] encryptedData;
         private final byte[] hmac;
@@ -93,4 +97,3 @@ public class Client implements Runnable {
         }
     }
 }
-
