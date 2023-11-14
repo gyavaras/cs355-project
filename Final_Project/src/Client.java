@@ -6,8 +6,8 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 
 public class Client implements Runnable {
-    private static final String ENCRYPTION_ALGORITHM = "AES/CBC/PKCS5Padding";
-    private static final String HASH_ALGORITHM = "HmacSHA256";
+    public static final String ENCRYPTION_ALGORITHM = "AES/CBC/PKCS5Padding";
+    public static final String HASH_ALGORITHM = "HmacSHA256";
     private static final int IV_SIZE = 16;
     private static final SecureRandom secureRandom = new SecureRandom();
 
