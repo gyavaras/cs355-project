@@ -12,9 +12,6 @@ The goal of this project is to implement a protocol which will allow them to com
 without any of the parties revealing to the other party the contents of any files. 
 
 Our Approach
-We intend to use CBC-Mac with Diffie Hellman to solve this problem. 
+We intend to use CBC-Mac with Diffie Hellman to solve this problem. Our first step is to create a server that will act 
+as a third party to compare code. 
 
-One server, one client, and one main class
-- the server is responsible for verifying, decrypting, and comparing the files sent in
-- the client is responsible for encryption of the files sent in by both parties
-- the main is responsible for starting the server, and create two client instances to store Bob and Alice's information separately 
