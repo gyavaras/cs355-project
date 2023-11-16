@@ -1,30 +1,39 @@
+import java.util.Scanner;
+
 public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
 
-        public static void main(String[] args) {
-            try {
-                byte[] encryptionKey = "encryptionKey1234".getBytes();
-                byte[] macKey = "macKey12345678901".getBytes();
+        try {
+            byte[] encryptionKey = "encryptionKey1234".getBytes();
+            byte[] macKey = "macKey12345678901".getBytes();
 
-                Server server = new Server(encryptionKey, macKey, 2);
+            Server server = new Server(encryptionKey, macKey, 2);
 
-                // Replace these file paths with the actual paths of Alice and Bob's files
-                String aliceFilePath = "path/to/alice_file.txt";
-                String bobFilePath = "path/to/bob_file.txt";
+            // Asking Alice to enter her file path
+            System.out.print("Enter Alice's file path: ");
+            String aliceFilePath = scanner.nextLine();
 
-                Client alice = new Client(server, "Alice", aliceFilePath, encryptionKey, macKey);
-                Client bob = new Client(server, "Bob", bobFilePath, encryptionKey, macKey);
+            // Asking Bob to enter his file path
+            System.out.print("Enter Bob's file path: ");
+            String bobFilePath = scanner.nextLine();
 
-                Thread aliceThread = new Thread(alice);
-                Thread bobThread = new Thread(bob);
+            Client alice = new Client(server, "Alice", aliceFilePath, encryptionKey, macKey);
+            Client bob = new Client(server, "Bob", bobFilePath, encryptionKey, macKey);
 
-                aliceThread.start();
-                bobThread.start();
+            Thread aliceThread = new Thread(alice);
+            Thread bobThread = new Thread(bob);
 
-                server.startComparison();
+            aliceThread.start();
+            bobThread.start();
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            server.startComparison();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            scanner.close();
         }
     }
+}
 
