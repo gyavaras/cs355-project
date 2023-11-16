@@ -7,6 +7,11 @@ import java.security.SecureRandom;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 public class Client implements Runnable {
     public static final String ENCRYPTION_ALGORITHM = "AES/CBC/PKCS5Padding";
     public static final String HASH_ALGORITHM = "HmacSHA256";
@@ -21,19 +26,34 @@ public class Client implements Runnable {
     public Client(Server server, String clientId, String filePath, byte[] encryptionKey, byte[] macKey) {
         this.server = server;
         this.clientId = clientId;
-        this.codeSegment = readFile(filePath); // Read file content
+        this.codeSegment = hashFile(filePath); // Compute hash of the file content
         this.encryptionKey = encryptionKey;
         this.macKey = macKey;
     }
-    // Helper method to read file content
-    private String readFile(String filePath) {
-        try {
-            return new String(Files.readAllBytes(Paths.get(filePath)));
-        } catch (IOException e) {
+    // Compute SHA-256 hash of the file
+    private String hashFile(String filePath) {
+        try (InputStream fis = new BufferedInputStream(new FileInputStream(filePath));
+             DigestInputStream dis = new DigestInputStream(fis, MessageDigest.getInstance("SHA-256"))) {
+
+            byte[] buffer = new byte[8192];
+            while (dis.read(buffer) != -1); // Read the file and update the hash calculation
+            byte[] hash = dis.getMessageDigest().digest();
+            return bytesToHex(hash); // Convert hash to hex string
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
+    // Helper method to convert bytes to hex string
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
 
     @Override
     public void run() {

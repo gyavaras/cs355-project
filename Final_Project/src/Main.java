@@ -1,12 +1,12 @@
 import java.util.Scanner;
-
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            byte[] encryptionKey = "encryptionKey1234".getBytes();
-            byte[] macKey = "macKey12345678901".getBytes();
+            // Ensure the key length is valid for AES (16 bytes for AES-128)
+            byte[] encryptionKey = "1234567890123456".getBytes(); // 16-byte key
+            byte[] macKey = "macKey1234567890".getBytes(); // Also 16-byte key
 
             Server server = new Server(encryptionKey, macKey, 2);
 
@@ -36,4 +36,3 @@ public class Main {
         }
     }
 }
-
