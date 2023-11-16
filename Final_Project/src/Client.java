@@ -4,7 +4,9 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 public class Client implements Runnable {
     public static final String ENCRYPTION_ALGORITHM = "AES/CBC/PKCS5Padding";
     public static final String HASH_ALGORITHM = "HmacSHA256";
@@ -16,13 +18,21 @@ public class Client implements Runnable {
     private final String codeSegment;
     private final byte[] encryptionKey;
     private final byte[] macKey;
-
-    public Client(Server server, String clientId, String codeSegment, byte[] encryptionKey, byte[] macKey) {
+    public Client(Server server, String clientId, String filePath, byte[] encryptionKey, byte[] macKey) {
         this.server = server;
         this.clientId = clientId;
-        this.codeSegment = codeSegment;
+        this.codeSegment = readFile(filePath); // Read file content
         this.encryptionKey = encryptionKey;
         this.macKey = macKey;
+    }
+    // Helper method to read file content
+    private String readFile(String filePath) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(filePath)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
