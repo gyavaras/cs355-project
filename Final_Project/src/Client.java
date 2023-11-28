@@ -87,10 +87,12 @@ public class Client implements Runnable {
             e.printStackTrace();
         }
     }
+    // Getter method for client ID
     public String getClientId() {
         return clientId;
     }
 
+    // Prepare encrypted data for the server
     private EncryptedData prepareDataForServer() throws Exception {
         byte[] hash = hash(codeSegment);
         IvParameterSpec iv = generateIv();
@@ -99,17 +101,20 @@ public class Client implements Runnable {
         return new EncryptedData(encrypted, hmac, iv);
     }
 
+    // Compute SHA-256 hash of a string
     private byte[] hash(String data) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         return digest.digest(data.getBytes("UTF-8"));
     }
 
+    // Generate a random Initialization Vector (IV)
     private IvParameterSpec generateIv() {
         byte[] iv = new byte[IV_SIZE];
         secureRandom.nextBytes(iv);
         return new IvParameterSpec(iv);
     }
 
+    // Encrypt data using AES encryption
     private byte[] encrypt(byte[] key, byte[] iv, byte[] plaintext) throws Exception {
         Cipher cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
@@ -118,18 +123,19 @@ public class Client implements Runnable {
         return cipher.doFinal(plaintext);
     }
 
+    // Create HMAC for data integrity verification
     private byte[] createHmac(byte[] key, byte[] data) throws Exception {
         Mac hmac = Mac.getInstance(HASH_ALGORITHM);
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, HASH_ALGORITHM);
         hmac.init(secretKeySpec);
         return hmac.doFinal(data);
     }
-
+    // Inner class to represent encrypted data (IV, encrypted data, HMAC)
     public static class EncryptedData {
         private final byte[] encryptedData;
         private final byte[] hmac;
         private final IvParameterSpec iv;
-
+        // Constructor to initialize the encrypted data
         public EncryptedData(byte[] encryptedData, byte[] hmac, IvParameterSpec iv) {
             this.encryptedData = encryptedData;
             this.hmac = hmac;
