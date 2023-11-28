@@ -33,7 +33,7 @@ public class Server {
         this.port = port;
         this.clientDataMap = new ConcurrentHashMap<>();
     }
-
+    // Method to start the server and handle client connections
     public void startServer() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (latch.getCount() > 0) {
@@ -44,20 +44,23 @@ public class Server {
             e.printStackTrace();
         }
     }
+    // Method to start the server and handle client connections
     private class ClientHandler implements Runnable {
         private Socket clientSocket;
-
+        // Constructor to initialize the client socket
         public ClientHandler(Socket socket) {
             this.clientSocket = socket;
         }
-
+        // Run method to handle communication with the client
         public void run() {
             try (DataInputStream dis = new DataInputStream(clientSocket.getInputStream())) {
+                // Read encrypted data, HMAC, and client ID from the client
                 byte[] iv = Base64.getDecoder().decode(dis.readUTF());
                 byte[] encryptedData = Base64.getDecoder().decode(dis.readUTF());
                 byte[] hmac = Base64.getDecoder().decode(dis.readUTF());
                 String clientId = dis.readUTF();
 
+                // Create EncryptedData object and store it in the clientDataMap
                 Client.EncryptedData data = new Client.EncryptedData(encryptedData, hmac, new IvParameterSpec(iv));
                 clientDataMap.put(clientId, data);
                 latch.countDown();
