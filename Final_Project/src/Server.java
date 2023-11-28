@@ -63,11 +63,14 @@ public class Server {
                 // Create EncryptedData object and store it in the clientDataMap
                 Client.EncryptedData data = new Client.EncryptedData(encryptedData, hmac, new IvParameterSpec(iv));
                 clientDataMap.put(clientId, data);
+                // Signal that data has been received from a client
                 latch.countDown();
 
+                // If all clients have sent their data, compare the data
                 if (latch.getCount() == 0) {
                     compareData();
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -75,7 +78,7 @@ public class Server {
     }
 
 
-
+    // Method to compare encrypted data from different clients
     private void compareData() {
         try {
             // Retrieve encrypted data for both clients
