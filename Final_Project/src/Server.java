@@ -12,11 +12,15 @@ import java.util.Base64;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
+    // Encryption key used for decrypting client data
     private final byte[] encryptionKey;
+    // Message Authentication Code (MAC) key for data integrity verification
     private final byte[] macKey;
+    // Encrypted data received from the clients
     private Client.EncryptedData aliceData;
     private Client.EncryptedData bobData;
     private final CountDownLatch latch;
+    // Countdown latch to synchronize client data reception
     private ConcurrentHashMap<String, Client.EncryptedData> clientDataMap;
 
     private int port;
