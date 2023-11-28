@@ -19,11 +19,13 @@ public class Server {
     // Encrypted data received from the clients
     private Client.EncryptedData aliceData;
     private Client.EncryptedData bobData;
-    private final CountDownLatch latch;
     // Countdown latch to synchronize client data reception
+    private final CountDownLatch latch;
+    // Map to store encrypted data for each client
     private ConcurrentHashMap<String, Client.EncryptedData> clientDataMap;
-
+    // Port on which the server listens for client connections
     private int port;
+    // Constructor to initialize the server with encryption and MAC keys, client count, and port
     public Server(byte[] encryptionKey, byte[] macKey, int clientCount, int port) {
         this.encryptionKey = encryptionKey;
         this.macKey = macKey;
