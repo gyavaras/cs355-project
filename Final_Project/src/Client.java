@@ -14,19 +14,28 @@ import java.net.Socket;
 import java.io.DataOutputStream;
 import java.util.Base64;
 public class Client implements Runnable {
+    // Constants for encryption and hashing algorithms
     public static final String ENCRYPTION_ALGORITHM = "AES/CBC/PKCS5Padding";
     public static final String HASH_ALGORITHM = "HmacSHA256";
+    // Size of Initialization Vector (IV) in bytes
     private static final int IV_SIZE = 16;
+    // SecureRandom for generating random IV
     private static final SecureRandom secureRandom = new SecureRandom();
 
+    // Reference to the server
     private final Server server;
+    // Unique identifier for the client
     private final String clientId;
+    // Code segment to be sent to the server
     private final String codeSegment;
+    // Encryption and MAC keys for securing communication
     private final byte[] encryptionKey;
     private final byte[] macKey;
+    // Server address and port
     private String serverAddress;
     private int port;
 
+    // Constructor to initialize the client with necessary parameters
     public Client(Server server, String clientId, String filePath, byte[] encryptionKey, byte[] macKey, String serverAddress, int port) {
         this.server = server;
         this.clientId = clientId;
@@ -61,7 +70,7 @@ public class Client implements Runnable {
     }
 
 
-
+    // Run method to be executed when the client is started as a thread
     @Override
     public void run() {
         try (Socket socket = new Socket(serverAddress, port);
