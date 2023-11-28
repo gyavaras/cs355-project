@@ -141,15 +141,15 @@ public class Client implements Runnable {
             this.hmac = hmac;
             this.iv = iv;
         }
-
+        // Getter method for encrypted data
         public byte[] getEncryptedData() {
             return encryptedData;
         }
-
+        // Getter method for HMAC
         public byte[] getHmac() {
             return hmac;
         }
-
+        // Getter method for IV
         public IvParameterSpec getIv() {
             return iv;
         }
