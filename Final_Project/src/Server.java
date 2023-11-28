@@ -106,24 +106,30 @@ public class Server {
     }
 
 
-
+    // Method to decrypt data and verify HMAC
     private byte[] decryptAndVerifyHMAC(Client.EncryptedData data) throws Exception {
         if (verifyHmac(data.getHmac(), macKey, data.getEncryptedData())) {
             return decrypt(encryptionKey, data.getIv().getIV(), data.getEncryptedData());
         } else {
+            // Return null if HMAC verification fails
             return null;
         }
     }
-
+    // Method to verify HMAC using the provided key and data
     private boolean verifyHmac(byte[] hmac, byte[] key, byte[] data) throws Exception {
+        // Initialize the HMAC instance with the key and compute the expected HMAC
         Mac hmacInstance = Mac.getInstance(Client.HASH_ALGORITHM);
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, Client.HASH_ALGORITHM);
         hmacInstance.init(secretKeySpec);
         byte[] expectedHmac = hmacInstance.doFinal(data);
+
+        // Compare the computed HMAC with the provided HMAC
         return Arrays.equals(expectedHmac, hmac);
     }
 
+    // Method to decrypt data using AES encryption
     private byte[] decrypt(byte[] key, byte[] iv, byte[] ciphertext) throws Exception {
+        // Initialize the AES cipher with the key and IV, and decrypt the ciphertext
         Cipher cipher = Cipher.getInstance(Client.ENCRYPTION_ALGORITHM);
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
