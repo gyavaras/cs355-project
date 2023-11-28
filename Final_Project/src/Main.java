@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -5,46 +7,40 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            // Key and server details initialization
-            byte[] encryptionKey = "1234567890123456".getBytes(); // 16-byte key for AES
-            byte[] macKey = "macKey1234567890".getBytes(); // 16-byte key for HMAC
-            String serverAddress = "127.0.0.1"; // Localhost (for local testing)
-            int serverPort = 12345; // Port number for the server to listen on
+            // Ensure the key length is valid for AES (16 bytes for AES-128)
+            byte[] encryptionKey = "1234567890123456".getBytes(); // 16-byte key
+            byte[] macKey = "macKey1234567890".getBytes(); // Also 16-byte key
 
-            // Start the server in a separate thread
-            Server server = new Server(encryptionKey, macKey, 2, serverPort);
-            Thread serverThread = new Thread(server::startServer);
-            serverThread.start();
+            // Since we have 5 files from Alice and 5 from Bob, we set clientCount to 10
+            Server server = new Server(encryptionKey, macKey, 10);
 
-            // Give the server some time to start
-            try {
-                Thread.sleep(1000); // Waiting 1 second for the server to initialize
-            } catch (InterruptedException e) {
-                System.out.println("Interrupted while waiting for the server to start.");
+            // Collect 5 file paths for Alice
+            List<String> aliceFilePaths = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                System.out.print("Enter one of Alice's file paths: ");
+                aliceFilePaths.add(scanner.nextLine());
             }
 
-            // Input file paths for Alice and Bob
-            System.out.print("Enter Alice's file path: ");
-            String aliceFilePath = scanner.nextLine();
+            // Collect 5 file paths for Bob
+            List<String> bobFilePaths = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                System.out.print("Enter one of Bob's file paths: ");
+                bobFilePaths.add(scanner.nextLine());
+            }
 
-            System.out.print("Enter Bob's file path: ");
-            String bobFilePath = scanner.nextLine();
-
-            // Create and start client threads
-            Client alice = new Client(server, "Alice", aliceFilePath, encryptionKey, macKey, serverAddress, serverPort);
-            Client bob = new Client(server, "Bob", bobFilePath, encryptionKey, macKey, serverAddress, serverPort);
-
+            // Create and start threads for Alice's files
+            Client alice = new Client(server, "Alice", aliceFilePaths, encryptionKey, macKey);
             Thread aliceThread = new Thread(alice);
-            Thread bobThread = new Thread(bob);
-
             aliceThread.start();
+
+            // Create and start threads for Bob's files
+            Client bob = new Client(server, "Bob", bobFilePaths, encryptionKey, macKey);
+            Thread bobThread = new Thread(bob);
             bobThread.start();
 
-            // Wait for both threads to finish
-            aliceThread.join();
-            bobThread.join();
+            // Start the comparison process on the server
+            server.startComparison();
 
-            // Server will automatically handle the comparison once both clients have connected and sent their data
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
