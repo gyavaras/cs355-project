@@ -1,7 +1,7 @@
 # cs355-project
 Zikas Fall CS35500 - Introduction to Cryptography 
 Semester Project 
-Authors: John Fumo, Brennan Horn, and Genna Yavaraski
+
 
 Semester Project Description
 Alice and Bob are subcontractors of the same company that claims it has given them different code-segments to audit. 
