@@ -121,7 +121,7 @@ public class Server {
             e.printStackTrace();
         }
     }
-
+    // Method to decrypt and verify HMAC of the encrypted data
     private byte[] decryptAndVerifyHMAC(Client.EncryptedData data) throws Exception {
         if (verifyHmac(data.getHmac(), macKey, data.getEncryptedData())) {
             IvParameterSpec ivParameterSpec = data.getIvParameterSpec(); // Convert byte array to IvParameterSpec
@@ -130,7 +130,7 @@ public class Server {
             return null;
         }
     }
-
+    // Method to verify HMAC using provided key and data
     private boolean verifyHmac(byte[] hmac, byte[] key, byte[] data) throws Exception {
         Mac hmacInstance = Mac.getInstance(Client.HASH_ALGORITHM);
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, Client.HASH_ALGORITHM);
@@ -138,7 +138,7 @@ public class Server {
         byte[] expectedHmac = hmacInstance.doFinal(data);
         return Arrays.equals(expectedHmac, hmac);
     }
-
+    // Method to decrypt data using AES algorithm
     private byte[] decrypt(byte[] key, byte[] iv, byte[] ciphertext) throws Exception {
         Cipher cipher = Cipher.getInstance(Client.ENCRYPTION_ALGORITHM);
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
@@ -146,7 +146,7 @@ public class Server {
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
         return cipher.doFinal(ciphertext);
     }
-
+    // Method to shut down the server gracefully
     private void shutdownServer() {
         try {
             pool.shutdown();
@@ -156,7 +156,7 @@ public class Server {
             e.printStackTrace();
         }
     }
-
+    // Inner class representing a thread to handle communication with a single client
     private class ClientHandler implements Runnable {
         private Socket clientSocket;
 
