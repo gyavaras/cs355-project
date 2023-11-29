@@ -35,12 +35,12 @@ public class Client implements Runnable, Serializable {
         this.clientId = clientId;
         this.encryptionKey = encryptionKey;
         this.macKey = macKey;
-        // Hash code segments from provided file paths
+        // Hash code segments from the file paths that alice and bob pass through
         for (String filePath : filePaths) {
             this.codeSegmentList.add(hashFile(filePath));
         }
-        // Connect to the server
-        this.socket = new Socket("localhost", 12345); // Connect to server
+        // Connect to the server using just a local port
+        this.socket = new Socket("localhost", 12345);
     }
 
     // Implementation of the Runnable interface for concurrent execution
@@ -51,12 +51,13 @@ public class Client implements Runnable, Serializable {
             // Send encrypted data for each code segment to the server
             for (String codeSegment : codeSegmentList) {
                 EncryptedData data = prepareDataForServer(codeSegment);
-                out.writeObject(data); // Send data to server
+                out.writeObject(data); // Sends the data to server
             }
-            out.writeObject(null); // Indicate end of data
+            out.writeObject(null); // Indicate end of data/file
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            //Same as in server just makes sure the socket it correctly closed
             try {
                 socket.close();
             } catch (IOException e) {
@@ -66,13 +67,16 @@ public class Client implements Runnable, Serializable {
     }
     // Method to hash the contents of a file using SHA-256
     private String hashFile(String filePath) {
+        //opens a input stream so that we can read the file
         try (InputStream fis = new BufferedInputStream(new FileInputStream(filePath));
+             //If we wrap the input stream with digest we can compute sha 256 of it
              DigestInputStream dis = new DigestInputStream(fis, MessageDigest.getInstance("SHA-256"))) {
-
+            //holds the data to be read
             byte[] buffer = new byte[8192];
+            //reads the file into the buffer until the file is empty
             while (dis.read(buffer) != -1); // Read the file and update the hash calculation
             byte[] hash = dis.getMessageDigest().digest();
-            return bytesToHex(hash); // Convert hash to hex string
+            return bytesToHex(hash); // Convert hash to hex string because it is not easily to transmit, also easier to read
         } catch (Exception e) {
             e.printStackTrace();
             return null;

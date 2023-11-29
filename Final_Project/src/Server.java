@@ -38,12 +38,12 @@ public class Server {
         this.encryptionKey = encryptionKey;
         this.macKey = macKey;
         this.latch = new CountDownLatch(clientCount);
-        this.serverSocket = new ServerSocket(12345); // Use an appropriate port number
+        this.serverSocket = new ServerSocket(12345); // Our port number used for testing sockets
         this.pool = Executors.newFixedThreadPool(clientCount);
         this.clientCount = clientCount;
     }
 
-    // Method to start the server, accept client connections, and initiate data comparison
+    // Method to start the server, accept client connections, and start the data comparison
     public void startServer() {
         //System.out.println("Server is running...");
         int connectedClients = 0;
@@ -62,7 +62,7 @@ public class Server {
         try {
             latch.await(); // Wait for all client data transmissions to complete
             startComparison(); // Start the comparison after all clients are done
-        } catch (InterruptedException e) {
+        } catch (InterruptedException e) { // We use this for error handling a problem with threads
             Thread.currentThread().interrupt();
             e.printStackTrace();
         }
@@ -80,25 +80,26 @@ public class Server {
     // Method to initiate the comparison of encrypted data from Alice and Bob
     private void startComparison() throws InterruptedException {
         System.out.println("Starting comparison...");
-        // Comparison logic
+        // Comparison logic (just makes sure it goes through all of Alice and Bobs data list)
         for (Client.EncryptedData aliceData : aliceDataList) {
             for (Client.EncryptedData bobData : bobDataList) {
                 compare(aliceData, bobData);
             }
         }
-
+        //Boolean that checks if a match was found during comparison
         if (anyMatchFound) {
             System.out.println("At least one match found.");
         } else {
             System.out.println("No matches found.");
         }
     }
-    // Method to initiate the comparison of encrypted data from Alice and Bob
+    // Method to start the comparison of encrypted data from Alice and Bob
     private void compare(Client.EncryptedData data1, Client.EncryptedData data2) {
         try {
             byte[] decryptedData1 = decryptAndVerifyHMAC(data1);
             byte[] decryptedData2 = decryptAndVerifyHMAC(data2);
-
+            //Main check logic that makes sure the files are not empty and the data is actually equal
+            //Exploiting that after the files are compressed it is deterministic so they will be equal if files are equal
             if (decryptedData1 != null && decryptedData2 != null && Arrays.equals(decryptedData1, decryptedData2)) {
                 anyMatchFound = true;
             }
@@ -107,31 +108,48 @@ public class Server {
         }
     }
     // Method to decrypt and verify HMAC of the encrypted data
+    // It first checks to see if the data authenticity of the data is verified, then starts to decrypt
     private byte[] decryptAndVerifyHMAC(Client.EncryptedData data) throws Exception {
         if (verifyHmac(data.getHmac(), macKey, data.getEncryptedData())) {
-            IvParameterSpec ivParameterSpec = data.getIvParameterSpec(); // Convert byte array to IvParameterSpec
+            // This gets the IV from the encrypted data and converts it to byte array for decryption
+            IvParameterSpec ivParameterSpec = data.getIvParameterSpec();
             return decrypt(encryptionKey, ivParameterSpec.getIV(), data.getEncryptedData());
         } else {
             return null;
         }
     }
     // Method to verify HMAC using provided key and data
+    // Makes sure that the data hasn't been altered in any way
     private boolean verifyHmac(byte[] hmac, byte[] key, byte[] data) throws Exception {
+        //Initializes the mac instance with the HMAC alg in the client class
         Mac hmacInstance = Mac.getInstance(Client.HASH_ALGORITHM);
+
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, Client.HASH_ALGORITHM);
+
+        //Initializes the mac instance with the secret key
         hmacInstance.init(secretKeySpec);
+        // computes the hmac with the data
         byte[] expectedHmac = hmacInstance.doFinal(data);
+
+        //makes sure the expected hmac matches the other so that there have been no changes
         return Arrays.equals(expectedHmac, hmac);
     }
-    // Method to decrypt data using AES algorithm
+    // Method to decrypt data using AES algorithm (In CBC mode)
     private byte[] decrypt(byte[] key, byte[] iv, byte[] ciphertext) throws Exception {
+        //Initializes the cipher instance for AES decryption
         Cipher cipher = Cipher.getInstance(Client.ENCRYPTION_ALGORITHM);
+
+        //Converts the secretkey from bytes to an object cuz that is required by the cipher
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+
+        //Same for this except it initializes the cipher
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+
+        //initializes with the two new objects for decryption
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
         return cipher.doFinal(ciphertext);
     }
-    // Method to shut down the server gracefully
+    // Method to shut down the server gracefully after the comparison has been done
     private void shutdownServer() {
         try {
             pool.shutdown();
@@ -141,7 +159,7 @@ public class Server {
             e.printStackTrace();
         }
     }
-    // Inner class representing a thread to handle communication with a single client
+    // Inner class representing a thread to handle communication with one client at a time
     private class ClientHandler implements Runnable {
         private Socket clientSocket;
 
@@ -149,13 +167,18 @@ public class Server {
             this.clientSocket = socket;
         }
 
+        //takes data from either alice or bob and processes it
         public void run() {
             try (ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream())) {
+                //first reads the client id which should be first piece of data from the client
                 String clientId = (String) ois.readObject();
                 //System.out.println("Client " + clientId + " connected.");
 
                 Object object;
+
+                //reads objects from the client until there isn't any more
                 while ((object = ois.readObject()) != null) {
+                    //also makes sure that it is of the correct encrypted type
                     if (object instanceof Client.EncryptedData) {
                         Client.EncryptedData data = (Client.EncryptedData) object;
                         receiveDataFromClient(clientId, data);  // Directly call the method of Server class
@@ -165,13 +188,14 @@ public class Server {
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
+                //just makes sure that the socket is closed once the data was completed
                 try {
                     clientSocket.close();
                     //System.out.println("Client socket closed.");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                latch.countDown(); // Signal that this client has finished
+                latch.countDown(); // Signal that this client has finished by counting down
             }
         }
     }
