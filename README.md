@@ -54,3 +54,17 @@ To run the GenerateLargeFile class, follow the steps below:
    1. If it does not work the first time, make sure you cd into the Test_Module\src folder
 4. Wait for the terminal to output "File Generated successfully." and the new file should appear in the Test_Module\src
 folder under your project view
+
+
+
+Libraries and Packages:
+Java.util: Used for Array Lists and Arrays which helped with the file paths from the users
+Java.io:  It is used for reading from and writing to data streams which we used for file reading of the client’s files.
+java.net: Used for socket programming capabilities to allow the client to send and receive data over our network. 
+javax.crypto: Provides the classes and interfaces for cryptographic operations.
+java.security: Generation of random numbers and hash digests which we used sha-256.
+
+Security Analysis Summary:
+The goal of the project was to create an interface between two clients and a server so that the clients could independently send five 500 mb files to the server without being altered or read by anyone except by the sender and receiver. The client/server system was set up using socket programming and threading so we could have multiple clients running on the server at a time (in this case 2, Alice and Bob). We utilized symmetric-key cryptography and assumed both the clients and the servers already had a key established and known.
+After establishing the client/server connections we hashed the files to a more manageable length using SHA-256 hashing that created a fixed sized digest that represents the file’s contents. We then encrypted the hashed file using AES-CBC encryption. The encrypted file was then sent through an HMAC to ensure that the file will not be tampered with should it be intercepted. The server then receives the 10 files (5 from Alice and 5 from Bob), verifies the files, decrypts, and de-hashes the files and then compares the contents of the files. If any of the files from Alice or Bob match, it prints to the console that there was at least one match found. Otherwise it prints that no matches were found.
+All of the schemes used (SHA-256, HMAC, and CBC-AES) were implemented using Java libraries.
