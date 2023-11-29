@@ -44,8 +44,6 @@ NOTE: This module is strictly used for testing purposes.
 By changing the name of the file (on line 7), one can produce any number of 500 MB files to be used to test the security
 of the server.
 
-2. SecureComparison.java
-
 To run the GenerateLargeFile class, follow the steps below:
 1. Go to the class and update the name of the file you wish to create (we used "largeTextFile#.java" where # was replaced with 1-10)
 2. Open a terminal in your IDE, and compile the GenerateLargeFile class using: javac GenerateLargeFile.java
