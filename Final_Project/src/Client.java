@@ -124,12 +124,12 @@ public class Client implements Runnable, Serializable {
         hmac.init(secretKeySpec);
         return hmac.doFinal(data);
     }
-
+    // Inner class representing encrypted data for transmission
     public static class EncryptedData implements Serializable {
         private final byte[] encryptedData;
         private final byte[] hmac;
         private final byte[] iv;  // Store IV as a byte array
-
+        // Constructor for EncryptedData
         public EncryptedData(byte[] encryptedData, byte[] hmac, byte[] iv) {
             this.encryptedData = encryptedData;
             this.hmac = hmac;
@@ -156,7 +156,7 @@ public class Client implements Runnable, Serializable {
     }
 
 
-
+    // Getter for client ID
     public String getClientId() {
         return clientId;
     }
