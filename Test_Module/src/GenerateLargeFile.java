@@ -4,7 +4,7 @@ import java.io.IOException;
 public class GenerateLargeFile {
 
     public static void main(String[] args) {
-        String filePath = "largeFile10.txt";
+        String filePath = "largeFile12.txt";
         long targetSize = 500 * 1024 * 1024; // 500 MB
 
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
