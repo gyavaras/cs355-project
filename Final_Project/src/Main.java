@@ -7,30 +7,21 @@ public class Main {
 
         public static void main(String[] args) throws IOException {
             Scanner scanner = new Scanner(System.in);
-            // Hardcoded encryption and MAC keys for simplicity
             byte[] encryptionKey = "1234567890123456".getBytes();
             byte[] macKey = "macKey1234567890".getBytes();
-
-            // Start the server in a separate thread
-            Server server = new Server(encryptionKey, macKey, 2); // Assuming 2 clients (Alice and Bob)
+            Server server = new Server(encryptionKey, macKey, 2);
             Thread serverThread = new Thread(server::startServer);
             serverThread.start();
-
-            // Collect file paths for Alice
             List<String> aliceFilePaths = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
                 System.out.print("Enter file #" + (i + 1) +" for Alice: ");
                 aliceFilePaths.add(scanner.nextLine());
             }
-
-            // Collect file paths for Bob
             List<String> bobFilePaths = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
                 System.out.print("Enter file #" + (i + 1) +" for Bob: ");
                 bobFilePaths.add(scanner.nextLine());
             }
-
-            // Start client threads after collecting all file paths
             Client alice = new Client("Alice", aliceFilePaths, encryptionKey, macKey);
             Thread aliceThread = new Thread(alice);
             aliceThread.start();
