@@ -51,7 +51,7 @@ public class Server {
     }
 
     public void startServer() {
-        System.out.println("Server is running...");
+        //System.out.println("Server is running...");
         int connectedClients = 0;
 
         while (connectedClients < clientCount) {
