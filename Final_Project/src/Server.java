@@ -30,17 +30,25 @@ import java.security.DigestInputStream; // If you're using DigestInputStream for
 import java.security.MessageDigest;
 
 public class Server {
+    // Encryption and MAC keys for secure communication
     private final byte[] encryptionKey;
     private final byte[] macKey;
+    // Lists to store encrypted data from Alice and Bob
     private List<Client.EncryptedData> aliceDataList = new ArrayList<>();
     private List<Client.EncryptedData> bobDataList = new ArrayList<>();
+    // Countdown latch to synchronize client threads
     private final CountDownLatch latch;
 
+    // ServerSocket to accept client connections
     private ServerSocket serverSocket;
+    // Thread pool for handling multiple clients concurrently
     private ExecutorService pool;
+    // Flag to track if any matching data is found during comparison
     private boolean anyMatchFound = false;
+    // Number of expected clients
     private final int clientCount;
 
+    // Constructor to initialize the server with keys and client count
     public Server(byte[] encryptionKey, byte[] macKey, int clientCount) throws IOException {
         this.encryptionKey = encryptionKey;
         this.macKey = macKey;
@@ -50,6 +58,7 @@ public class Server {
         this.clientCount = clientCount;
     }
 
+    // Method to start the server, accept client connections, and initiate data comparison
     public void startServer() {
         //System.out.println("Server is running...");
         int connectedClients = 0;
@@ -75,7 +84,7 @@ public class Server {
 
         shutdownServer();
     }
-
+    // Method to receive encrypted data from clients
     public synchronized void receiveDataFromClient(String clientId, Client.EncryptedData data) {
         if ("Alice".equals(clientId)) {
             aliceDataList.add(data);
@@ -83,7 +92,7 @@ public class Server {
             bobDataList.add(data);
         }
     }
-
+    // Method to initiate the comparison of encrypted data from Alice and Bob
     private void startComparison() throws InterruptedException {
         System.out.println("Starting comparison...");
         // Comparison logic
@@ -99,7 +108,7 @@ public class Server {
             System.out.println("No matches found.");
         }
     }
-
+    // Method to initiate the comparison of encrypted data from Alice and Bob
     private void compare(Client.EncryptedData data1, Client.EncryptedData data2) {
         try {
             byte[] decryptedData1 = decryptAndVerifyHMAC(data1);
