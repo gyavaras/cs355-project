@@ -7,7 +7,7 @@ public class Main {
 
         public static void main(String[] args) throws IOException {
             Scanner scanner = new Scanner(System.in);
-
+            // Hardcoded encryption and MAC keys for simplicity
             byte[] encryptionKey = "1234567890123456".getBytes();
             byte[] macKey = "macKey1234567890".getBytes();
 
@@ -16,12 +16,14 @@ public class Main {
             Thread serverThread = new Thread(server::startServer);
             serverThread.start();
 
+            // Collect file paths for Alice
             List<String> aliceFilePaths = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
                 System.out.print("Enter one of Alice's file paths: ");
                 aliceFilePaths.add(scanner.nextLine());
             }
 
+            // Collect file paths for Bob
             List<String> bobFilePaths = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
                 System.out.print("Enter one of Bob's file paths: ");
