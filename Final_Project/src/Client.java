@@ -10,16 +10,13 @@ import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.Cipher; // For doFinal method in Cipher class
-import javax.crypto.spec.IvParameterSpec;
+
 
 import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.security.DigestInputStream; // If you're using DigestInputStream for hashing
-import java.security.MessageDigest;
+
 
 public class Client implements Runnable, Serializable {
     // Constants for encryption and hashing algorithms

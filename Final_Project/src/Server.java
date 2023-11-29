@@ -8,26 +8,11 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Cipher; // For doFinal method in Cipher class
 import javax.crypto.spec.IvParameterSpec;
 
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.security.DigestInputStream; // If you're using DigestInputStream for hashing
-import java.security.MessageDigest;
 
 public class Server {
     // Encryption and MAC keys for secure communication
