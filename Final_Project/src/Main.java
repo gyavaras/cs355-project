@@ -19,14 +19,14 @@ public class Main {
             // Collect file paths for Alice
             List<String> aliceFilePaths = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
-                System.out.print("Enter one of Alice's file paths: ");
+                System.out.print("Enter file #" + (i + 1) +" for Alice: ");
                 aliceFilePaths.add(scanner.nextLine());
             }
 
             // Collect file paths for Bob
             List<String> bobFilePaths = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
-                System.out.print("Enter one of Bob's file paths: ");
+                System.out.print("Enter file #" + (i + 1) +" for Bob: ");
                 bobFilePaths.add(scanner.nextLine());
             }
 

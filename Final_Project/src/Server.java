@@ -88,9 +88,9 @@ public class Server {
         }
         //Boolean that checks if a match was found during comparison
         if (anyMatchFound) {
-            System.out.println("At least one match found.");
+            System.out.println("At least one of Alice's files contains the same information as one of Bob's files.");
         } else {
-            System.out.println("No matches found.");
+            System.out.println("None of Alice's files contain the same information as any of Bob's files.");
         }
     }
     // Method to start the comparison of encrypted data from Alice and Bob
